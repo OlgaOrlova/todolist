@@ -9,21 +9,27 @@ var list = document.createElement("ul");
 mainBlock.appendChild(list);
 document.body.appendChild(mainBlock);
 
-var controller = new Controller(new View(), new Data([]));
+var data = new Data([]);
 var eventHandler = new EventHandler(mainBlock, input);
+
 
 function EventHandler(rootElement, input) {
     this.add = function () {
-        controller.add(input.value);
+        data.add(new Task(false, input.value, new Date().toUTCString(), randomId()));
+        showTaskList(data.getAll());
+
     };
     this.remove = function (taskId) {
-        controller.remove(taskId);
+        data.delete(taskId);
+        showTaskList(data.getAll());
     };
     this.mark = function (taskId) {
-        controller.mark(taskId);
+        data.marks(taskId);
+        showTaskList(data.getAll());
     };
     this.removeAll = function () {
-        controller.removeAll();
+        data.deleteAll();
+        showTaskList(data.getAll());
     };
 
     var self = this;
@@ -55,10 +61,7 @@ function addInput() {
     return input;
 }
 
-function View() {
-
-}
-View.prototype.showTaskList = function (items) {
+function showTaskList(items) {
     list.innerHTML = "";
     for (var i = 0; i < items.length; i++) {
         var task = items[i];
@@ -73,4 +76,9 @@ View.prototype.showTaskList = function (items) {
         }
         list.appendChild(li)
     }
+};
+
+
+function randomId() {
+    return Math.floor(Math.random() * 100);
 };
