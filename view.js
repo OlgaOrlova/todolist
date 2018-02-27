@@ -1,33 +1,18 @@
-var mainBlock = document.createElement("div");
-mainBlock.className = "mainBlock";
+function View() {
 
-addButton("Remove all", "removeAll");
-addButton("Add", "add");
-var input = addInput();
+}
 
-var list = document.createElement("ul");
-mainBlock.appendChild(list);
-document.body.appendChild(mainBlock);
-
-var controller = new Controller(new View(), new Data([]));
-var eventHandler = new EventHandler(mainBlock, input);
-
-function EventHandler(rootElement, input) {
-    this.add = function () {
-        controller.add(input.value);
-    };
-    this.remove = function (taskId) {
-        controller.remove(taskId);
-    };
-    this.mark = function (taskId) {
-        controller.mark(taskId);
-    };
-    this.removeAll = function () {
-        controller.removeAll();
-    };
-
+View.prototype.init = function () {
+    this.mainBlock = document.createElement("div");
+    this.mainBlock.className = "mainBlock";
+    var input = this.addInput();
+    this.addButton("Remove all", "removeAll");
+    this.addButton("Add", "add");
+    this.list = document.createElement("ul");
+    this.mainBlock.appendChild(this.list);
+    document.body.appendChild(this.mainBlock);
     var self = this;
-    rootElement.addEventListener("click", function (event) {
+    this.mainBlock.addEventListener("click", function (event) {
         var target = event.target;
         var action = target.getAttribute("action");
         var taskId = target.getAttribute("taskId");
@@ -39,27 +24,23 @@ function EventHandler(rootElement, input) {
     });
 }
 
-function addButton(buttonName, action) {
+View.prototype.addButton = function (buttonName, action) {
     var buttonAdd = document.createElement("button");
     buttonAdd.innerHTML = buttonName;
     buttonAdd.type = "button";
     buttonAdd.setAttribute("action", action);
-    mainBlock.appendChild(buttonAdd);
+    this.mainBlock.appendChild(buttonAdd);
 }
 
-function addInput() {
+View.prototype.addInput = function () {
     var input = document.createElement("input");
     input.type = "text";
     input.className = "input";
     document.body.appendChild(input);
     return input;
 }
-
-function View() {
-
-}
 View.prototype.showTaskList = function (items) {
-    list.innerHTML = "";
+    this.list.innerHTML = "";
     for (var i = 0; i < items.length; i++) {
         var task = items[i];
         var taskName = task.getName();
@@ -71,6 +52,24 @@ View.prototype.showTaskList = function (items) {
         if (task.getIsCompleted()) {
             li.style.background = "red";
         }
-        list.appendChild(li)
+        this.list.appendChild(li)
     }
 };
+
+
+View.prototype.add = function () {
+    controller.add(this.input.value);
+};
+View.prototype.remove = function (taskId) {
+    controller.remove(taskId);
+};
+View.prototype.mark = function (taskId) {
+    controller.mark(taskId);
+};
+View.prototype.removeAll = function () {
+    controller.removeAll();
+};
+
+var view = new View();
+view.init();
+var controller = new Controller(view, new Data([]));
